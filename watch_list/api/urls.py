@@ -6,7 +6,7 @@ from watch_list.api.views import WatchListView, WatchDetailView, StreamPlatformV
 urlpatterns = [
     # path('list/', movie_list, name='movie-list'),
     # path('<int:pk>', movie_detail, name='movie-detail'),
-    path('list/', WatchListView.as_view(), name='movie-list'),
+    path('', WatchListView.as_view(), name='movie-list'),
     path('<int:pk>', WatchDetailView.as_view(), name='movie-detail'),
     path('stream/', StreamPlatformView.as_view(), name='stream'),
     path('stream/<int:pk>', StreamPlatformDetailView.as_view(), name='stream-detail'),
