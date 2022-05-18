@@ -3,19 +3,19 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.views import APIView
 
-from watch_list.models import Movie
-from .serializers import MovieSerializer
+from watch_list.models import WatchList, StreamPlatform
+from .serializers import WatchListSerializer, StreamPlatformSerializer
 
 
-class MovieList(APIView):
+class WatchListView(APIView):
 
     def get(self, request):
-        qs = Movie.objects.all()
-        serializer = MovieSerializer(qs, many=True)
+        qs = WatchList.objects.all()
+        serializer = WatchListSerializer(qs, many=True)
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = MovieSerializer(data=request.data)
+        serializer = WatchListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -23,24 +23,24 @@ class MovieList(APIView):
             return Response(serializer.errors)
 
 
-class MovieDetail(APIView):
+class WatchDetailView(APIView):
 
     def get(self, request, pk):
         try:
-            qs = Movie.objects.get(pk=pk)
-        except Movie.DoesNotExist:
+            qs = WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
             return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = MovieSerializer(qs)
+        serializer = WatchListSerializer(qs)
         return Response(serializer.data)
 
     def put(self, request, pk):
         try:
-            qs = Movie.objects.get(pk=pk)
-        except Movie.DoesNotExist:
+            qs = WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
             return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = MovieSerializer(qs, data=request.data)
+        serializer = WatchListSerializer(qs, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -48,14 +48,60 @@ class MovieDetail(APIView):
 
     def delete(self, request, pk):
         try:
-            qs = Movie.objects.get(pk=pk)
-        except Movie.DoesNotExist:
+            qs = WatchList.objects.get(pk=pk)
+        except WatchList.DoesNotExist:
             return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
 
         qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class StreamPlatformView(APIView):
+
+    def get(self, request):
+        qs = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(qs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+
+class StreamPlatformDetailView(APIView):
+
+    def get(self, request, pk):
+        try:
+            qs = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({"Error": "Stream Platform not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = StreamPlatformSerializer(qs)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        try:
+            qs = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({"Error": "Stream Platform not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StreamPlatformSerializer(qs, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            qs = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({"Error": "Stream Platform not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        qs.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 
