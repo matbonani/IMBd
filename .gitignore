@@ -1,0 +1,15 @@
+__pycache__
+
+*.*~
+
+*.pyc
+
+.idea
+
+**.sqlite3
+
+**media
+
+**.png
+
+
