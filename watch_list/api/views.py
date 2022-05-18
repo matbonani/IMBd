@@ -1,11 +1,67 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from rest_framework.views import APIView
 
 from watch_list.models import Movie
 from .serializers import MovieSerializer
 
 
+class MovieList(APIView):
+
+    def get(self, request):
+        qs = Movie.objects.all()
+        serializer = MovieSerializer(qs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = MovieSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+class MovieDetail(APIView):
+
+    def get(self, request, pk):
+        try:
+            qs = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MovieSerializer(qs)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        try:
+            qs = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MovieSerializer(qs, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            qs = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            return Response({"Error": "Movie not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        qs.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
+"""
 @api_view(['GET', 'POST'])
 def movie_list(request):
     if request.method == 'GET':
@@ -44,3 +100,4 @@ def movie_detail(request, pk):
     if request.method == 'DELETE':
         qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+"""
