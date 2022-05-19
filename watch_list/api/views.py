@@ -9,23 +9,28 @@ from watch_list.models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 
 
-class ReviewDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
-    queryset = Review.objects.all()
+class ReviewCreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        movie = WatchList.objects.get(pk=pk)
+
+        serializer.save(watchlist=movie)
 
 
-class ReviewListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = Review.objects.all()
+class ReviewListView(generics.ListAPIView):
+    # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk)  # watchlist field of review
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 class WatchListView(APIView):
@@ -167,4 +172,23 @@ def movie_detail(request, pk):
     if request.method == 'DELETE':
         qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+        
+
+class ReviewDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+class ReviewListView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 """
