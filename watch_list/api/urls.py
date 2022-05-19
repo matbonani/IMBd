@@ -2,8 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # from watch_list.api.views import movie_list, movie_detail
-from watch_list.api.views import WatchListView, WatchDetailView, StreamPlatformView,\
-    StreamPlatformDetailView, ReviewListView, ReviewDetailView, ReviewCreateView, StreamPlatformViewSet
+from watch_list.api.views import WatchListView, WatchDetailView,\
+    ReviewListView, ReviewDetailView, ReviewCreateView, StreamPlatformViewSet
 
 router = DefaultRouter()
 router.register('stream', StreamPlatformViewSet, basename='streamplatform')
