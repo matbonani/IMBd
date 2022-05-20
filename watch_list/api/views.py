@@ -11,11 +11,12 @@ from rest_framework.permissions import IsAuthenticated
 
 from watch_list.models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
-from .permissions import AdminOrReadOnly, ReviewUserOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 
 
 class ReviewCreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -44,7 +45,7 @@ class ReviewCreateView(generics.CreateAPIView):
 class ReviewListView(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -54,10 +55,11 @@ class ReviewListView(generics.ListAPIView):
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [ReviewUserOrReadOnly]
+    permission_classes = [IsReviewUserOrReadOnly]
 
 
 class WatchListView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request):
         qs = WatchList.objects.all()
@@ -74,6 +76,7 @@ class WatchListView(APIView):
 
 
 class WatchDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request, pk):
         try:
@@ -106,9 +109,10 @@ class WatchDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class StreamPlatformViewSet(viewsets.ReadOnlyModelViewSet):
+class StreamPlatformViewSet(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 
 
@@ -202,6 +206,7 @@ class StreamPlatformViewSet(viewsets.ViewSet):
 #APIView
 
 class StreamPlatformView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request):
         qs = StreamPlatform.objects.all()
@@ -217,7 +222,8 @@ class StreamPlatformView(APIView):
 
 
 class StreamPlatformDetailView(APIView):
-
+    permission_classes = [IsAdminOrReadOnly]
+    
     def get(self, request, pk):
         try:
             qs = StreamPlatform.objects.get(pk=pk)
