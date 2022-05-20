@@ -12,7 +12,7 @@ urlpatterns = [
     # path('list/', movie_list, name='movie-list'),                  function view
     # path('<int:pk>', movie_detail, name='movie-detail'),
     path('', WatchListView.as_view(), name='movie-list'),
-    path('<int:pk>', WatchDetailView.as_view(), name='movie-detail'),
+    path('<int:pk>/', WatchDetailView.as_view(), name='movie-detail'),
 
     # path('stream/', StreamPlatformView.as_view(), name='stream'),     APIView
     # path('stream/<int:pk>', StreamPlatformDetailView.as_view(), name='streamplatform-detail'),
@@ -21,7 +21,7 @@ urlpatterns = [
 
     # path('review/', ReviewListView.as_view(), name='review-list'),
     # path('review/<int:pk>', ReviewDetailView.as_view(), name='review-detail'),
-    path('<int:pk>/review-create', ReviewCreateView.as_view(), name='review-create'),
-    path('<int:pk>/review', ReviewListView.as_view(), name='review-list'),
-    path('review/<int:pk>', ReviewDetailView.as_view(), name='review-detail'),
+    path('<int:pk>/review-create/', ReviewCreateView.as_view(), name='review-create'),
+    path('<int:pk>/review/', ReviewListView.as_view(), name='review-list'),
+    path('review/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
 ]
