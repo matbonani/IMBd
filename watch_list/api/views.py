@@ -45,7 +45,7 @@ class ReviewCreateView(generics.CreateAPIView):
 class ReviewListView(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -56,6 +56,11 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        obj = get_object_or_404(queryset=self.get_queryset(), pk=self.kwargs['pk'])
+        obj.delete()
+        return Response({"messge": "Succesfully deleted"})
 
 
 class WatchListView(APIView):
