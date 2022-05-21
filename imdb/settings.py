@@ -154,7 +154,14 @@ REST_FRAMEWORK = {
         'review-create': '100/minute',
         'review-list': '100/minute',
         'review-detail': '100/minute'
-    }
+    },
+
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 5
+
+    # 'DEFAULT_RENDERER_CLASSES': (
+    #    'rest_framework.renderers.JSONRenderer',
+    # )
 }
 
 SIMPLE_JWT = {
