@@ -24,14 +24,14 @@ def registration_view(request):
             data['response'] = "Registration Sucessfuly !"
             data['username'] = account.username
             data['email'] = account.email
-            # token = Token.objects.get(user=account).key
-            # data['token'] = token
+            token = Token.objects.get(user=account).key
+            data['token'] = token
 
-            refresh = RefreshToken.for_user(account)
-            data['token'] = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }
+            # refresh = RefreshToken.for_user(account)
+            # data['token'] = {
+            #    'refresh': str(refresh),
+            #    'access': str(refresh.access_token),
+            # }
 
             return Response(data, status=status.HTTP_201_CREATED)
 

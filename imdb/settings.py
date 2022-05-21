@@ -139,9 +139,21 @@ REST_FRAMEWORK = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #    'rest_framework.throttling.AnonRateThrottle',
+    #    'rest_framework.throttling.UserRateThrottle'
+    # ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/minute',
+        'user': '100/minute',
+        'review-create': '100/minute',
+        'review-list': '100/minute',
+        'review-detail': '100/minute'
+    }
 }
 
 SIMPLE_JWT = {

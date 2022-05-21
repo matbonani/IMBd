@@ -8,15 +8,18 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 
 from watch_list.models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from .permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
+from user_app.api.throttling import ReviewListThrottling, ReviewCreateThrottling
 
 
 class ReviewCreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottling]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -45,7 +48,8 @@ class ReviewCreateView(generics.CreateAPIView):
 class ReviewListView(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottling, AnonRateThrottle]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -56,6 +60,8 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnly]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review-detail'
 
     def delete(self, request, *args, **kwargs):
         obj = get_object_or_404(queryset=self.get_queryset(), pk=self.kwargs['pk'])
