@@ -9,11 +9,25 @@ from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 from watch_list.models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from .permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from user_app.api.throttling import ReviewListThrottling, ReviewCreateThrottling
+
+
+class UserReviewList(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+
+    # def get_queryset(self):
+    #    username = self.kwargs['username']
+    #    return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
 
 
 class ReviewCreateView(generics.CreateAPIView):
@@ -50,6 +64,8 @@ class ReviewListView(generics.ListAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottling, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username', 'active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -67,6 +83,18 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
         obj = get_object_or_404(queryset=self.get_queryset(), pk=self.kwargs['pk'])
         obj.delete()
         return Response({"messge": "Succesfully deleted"})
+
+
+class WatchListGenericView(generics.ListAPIView):
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    throttle_classes = [ReviewListThrottling, AnonRateThrottle]
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['title', 'platform__name']
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ['title', 'platform__name']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['avg_rating']
 
 
 class WatchListView(APIView):
