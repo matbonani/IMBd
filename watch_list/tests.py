@@ -48,3 +48,52 @@ class StreamPlatformTestCase(APITestCase):
         response = self.client.put(reverse('streamplatform-detail', args=(self.stream.id,)), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+
+class WatchlistTestCase(APITestCase):
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(username='example', password='bonani123456')  # normal user
+        self.token = Token.objects.get(user__username=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+        self.stream = models.StreamPlatform.objects\
+            .create(name='example', about='just a stream', website='http://www.example.com')
+
+        self.watchlist = models.WatchList.objects\
+            .create(platform=self.stream, title='cruz', storyline='example', active=True)
+
+    def test_watchlist_create(self):
+        data = {
+            "platform": self.stream,
+            "title": "Example",
+            "storyline": "Example",
+            "active": True
+        }
+        response = self.client.post(reverse('movie-list'), data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_watchlist_list(self):
+        response = self.client.get(reverse('movie-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_watchlist_detail(self):
+        response = self.client.get(reverse('movie-detail', args=(self.watchlist.id,)))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(models.WatchList.objects.get().title, 'cruz')
+        self.assertEqual(models.WatchList.objects.count(), 1)
+
+    def test_watchlist_detail_delete(self):
+        response = self.client.delete(reverse('movie-detail', args=(self.watchlist.id,)))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_watchlist_detail_delete(self):
+        data = {
+            "platform": self.stream,
+            "title": "ExamplePUT",
+            "storyline": "ExamplePUT",
+            "active": True
+        }
+        response = self.client.put(reverse('movie-detail', args=(self.watchlist.id,)))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
